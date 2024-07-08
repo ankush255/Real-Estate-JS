@@ -6,7 +6,7 @@ module.exports = class UserService {
       try {
         return await User.create(body);
       } catch (error) {
-        return error.message;
+        return error;
       }
     }
    
@@ -15,7 +15,7 @@ module.exports = class UserService {
       try {
         return await User.findOne(body);
       } catch (error) {
-        return error.message;
+        return error;
       }
     }
   
@@ -41,7 +41,7 @@ module.exports = class UserService {
 
         return await User.find(body);
       } catch (error) {
-        return error.message;
+        return error;
       }
     }
   
@@ -58,7 +58,7 @@ module.exports = class UserService {
           }
         );
       } catch (error) {
-        return error.message;
+        return error;
       }
     }
   };
