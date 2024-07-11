@@ -130,15 +130,15 @@ module.exports = class CartServices {
       ]);
       let totalPages = Math.ceil(totalCount.length / perPage);
 
-      // let totalAmount = result
-      //   .map((item) => ({
-      //     quantity: item.quantity,
-      //     rant_price: item.products.productId.rant_price,
-      //   }))
-      //   .reduce((total, item) => (total += item.quantity * item.rant_price), 0);
-      // let discountAmount = totalAmount * 0.05;
-      // let GST = totalAmount * 0.18;
-      // totalAmount = totalAmount - (discountAmount + GST);
+      let totalAmount = result
+        .map((item) => ({
+          quantity: item.products.quantity,
+          price: item.products.productId.price,
+        }))
+        .reduce((total, item) => (total += item.quantity * item.price), 0);
+      let discountAmount = totalAmount * 0.05;
+      let GST = totalAmount * 0.18;
+      totalAmount = totalAmount - (discountAmount + GST);
       // console.log(totalAmount);
       return {
         totalDoc: totalCount.length,
@@ -146,9 +146,9 @@ module.exports = class CartServices {
         currentPage: pageNo,
         // perPage: perPage,
         result,
-        // GST: GST,
-        // discount: discountAmount,
-        // totalAmount,
+        GST: GST,
+        discount: discountAmount,
+        totalAmount,
       };
     } catch (err) {
       console.log(err);

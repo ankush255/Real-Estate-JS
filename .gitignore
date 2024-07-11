@@ -1,3 +1,7 @@
 /node_modules
 .env
 package-lock.json
+/src/controller/user/order.controller.js
+/src/model/order.model.js
+/src/routes/user/order.routes.js
+/src/service/order.service.js

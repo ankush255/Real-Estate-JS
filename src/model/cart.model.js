@@ -24,6 +24,9 @@ const cartSchema = mongoose.Schema(
         },
       },
     ],
+    totalAmount: {
+      type: Number,
+    },
     isDelete: {
       type: Boolean,
       default: false,

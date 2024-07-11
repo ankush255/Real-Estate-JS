@@ -9,7 +9,7 @@ const productSchema = mongoose.Schema({
     time : {
         type : String
     },
-    rant_price : {
+    price : {
         type: Number
     },
     rating : {
