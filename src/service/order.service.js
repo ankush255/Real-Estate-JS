@@ -1,59 +1,35 @@
-const { query } = require("express");
-const Cart = require("../model/cart.model");
+const Order = require("../model/order.model");
 const { default: mongoose } = require("mongoose");
 
-module.exports = class CartServices {
-  // Create Cart
-
-  async addNewCart(body, userID) {
+module.exports = class OrderServices {
+  // Create New Order
+  async newOrder(body, userID) {
     try {
-      let userCarts = await Cart.findOne({ user: userID, isDelete: false });
-      if (!userCarts) {
-        return await Cart.create({
-          user: userID,
-          products: [
-            {
-              productId: body.productId,
-              quantity: body.quantity || 1,
-              date: body.date,
-            },
-          ],
-        });
-      } else {
-        let findproductIndex = userCarts.products.findIndex(
-          (item) => String(item.productId) === body.productId
-        );
-        if (findproductIndex !== -1) {
-          userCarts.products[findproductIndex].quantity += body.quantity || 1;
-        } else {
-          userCarts.products.push({
-            productId: body.productId,
-            quantity: body.quantity || 1,
-            date: body.date,
-          });
-        }
-        return await userCarts.save();
-      }
+      return await Order.create({
+        user: userID,
+        products: body.products,
+        totalAmount: body.totalAmount,
+      });
     } catch (err) {
       console.log(err);
-      return err.message;
+      return err;
     }
   }
 
   // Get All Carts
 
-  async getAllCarts(query, userID) {
+  async getAllOrder(query, userID) {
     try {
       // Pagination
       let pageNo = Number(query.pageNo) || 1;
       let perPage = Number(query.perPage) || 5;
       let skip = (pageNo - 1) * perPage;
 
-      let cartItem =
-        query.cartId && query.cartId !== ""
+      let orderItem =
+        query.orderId && query.orderId !== ""
           ? [
               {
-                $match: { _id: new mongoose.Types.ObjectId(query.cartId) },
+                $match: { _id: new mongoose.Types.ObjectId(query.orderId) },
               },
             ]
           : [];
@@ -70,7 +46,7 @@ module.exports = class CartServices {
           $match: { isDelete: false },
         },
         ...loginUser,
-        ...cartItem,
+        ...orderItem,
         {
           $lookup: {
             from: "users",
@@ -116,9 +92,8 @@ module.exports = class CartServices {
         },
       ];
 
-      //   console.log(pipeline);
-      const totalCount = await Cart.aggregate([...pipeline]);
-      let result = await Cart.aggregate([
+      const totalCount = await Order.aggregate([...pipeline]);
+      let result = await Order.aggregate([
         ...pipeline,
         {
           $skip: skip,
@@ -140,6 +115,7 @@ module.exports = class CartServices {
       let GST = totalAmount * 0.18;
       totalAmount = totalAmount - (discountAmount + GST);
       // console.log(totalAmount);
+
       return {
         otalDoc: totalCount.length,
         totalPages,
@@ -155,48 +131,22 @@ module.exports = class CartServices {
     }
   }
 
-  // Update Cart
-
-  async updateCart(body, userID) {
+  // Remove Order
+  async removeOrder(query, userID) {
     try {
-      let updateCart = await Cart.findOneAndUpdate(
+      let removeOrder = await Order.findOneAndUpdate(
         {
           user: userID,
           isDelete: false,
         },
         {
-          $set: body,
+          isDelete: true,
         },
         {
           new: true,
         }
       );
-      return updateCart;
-    } catch (err) {
-      console.log(err);
-      return err.message;
-    }
-  }
-
-  // Remove Cart
-  async removeCart(query, userID) {
-    try {
-      let removeCart = await Cart.findOneAndUpdate(
-        {
-          user: userID,
-        },
-        {
-          $pull: {
-            products: {
-              productId: new mongoose.Types.ObjectId(query.productId),
-            },
-          },
-        },
-        {
-          new: true,
-        }
-      );
-      return removeCart;
+      return removeOrder;
     } catch (err) {
       console.log(err);
       return err.message;
