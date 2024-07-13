@@ -1,7 +1,7 @@
 const express = require("express");
 const productRoutes = express.Router();
 
-const upload = require('../../Helper/imageUpload');
+const upload = require('../../helper/imageUpload');
 
 const{
     createProduct,
